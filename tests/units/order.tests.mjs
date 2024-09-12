@@ -3,6 +3,7 @@ import sinon from 'sinon';
 import OrderService from '../../src/services/orders.js';
 import OrderModel from '../../src/models/order.js';
 import { NotFound } from '../../src/globals/errors.js';
+import mongoose from 'mongoose';
 
 describe('Order Service', function () {
     let orderService;
@@ -24,38 +25,43 @@ describe('Order Service', function () {
 
     describe('Create Order', function () {
         it('should save an order successfully', async function () {
+            const productId = new mongoose.Types.ObjectId();
+            const itemId = new mongoose.Types.ObjectId();
+            const orderId = new mongoose.Types.ObjectId();
+
             const orderData = {
                 date: new Date(),
                 status: 'pending',
                 totalAmount: 100,
-                items: [{ product_id: '123', quantity: 2 }]
+                items: [{ product_id: productId, quantity: 2 }]
             };
 
-            const savedOrder = { _id: '1', ...orderData };
+            const savedOrder = { _id: orderId, ...orderData };
             
             // Stub sur l'instance de OrderModel
             const saveStub = sandbox.stub(OrderModel.prototype, 'save').resolves(savedOrder);
 
             const result = await orderService.create({ fields: orderData });
 
+            assert.strictEqual(result._id instanceof mongoose.Types.ObjectId, true);
+            assert.strictEqual(result.items[0]._id instanceof mongoose.Types.ObjectId, true);
+
             // Comparaison uniquement des champs pertinents
             assert.deepEqual({
-                _id: result._id,
                 date: result.date.toISOString(),
                 status: result.status,
                 totalAmount: result.totalAmount,
                 items: result.items.map(item => ({
                     product_id: item.product_id,
-                    quantity: item.quantity
+                    quantity: item.quantity,
                 }))
             }, {
-                _id: savedOrder._id,
                 date: savedOrder.date.toISOString(),
                 status: savedOrder.status,
                 totalAmount: savedOrder.totalAmount,
                 items: savedOrder.items.map(item => ({
                     product_id: item.product_id,
-                    quantity: item.quantity
+                    quantity: item.quantity,
                 }))
             });
 
@@ -63,15 +69,14 @@ describe('Order Service', function () {
         });
     });
 
-    /*
     describe('Get Orders', function () {
         it('should get all orders successfully', async function () {
             const orders = [{
-                _id: '1',
+                _id: new mongoose.Types.ObjectId(),
                 date: new Date(),
                 status: 'pending',
                 totalAmount: 100,
-                items: [{ product_id: '123', quantity: 2 }]
+                items: [{ product_id: new mongoose.Types.ObjectId(), quantity: 2 }]
             }];
             
             // Stub sur la méthode find
@@ -81,23 +86,23 @@ describe('Order Service', function () {
 
             // Comparaison des champs pertinents pour tous les ordres
             const mappedResult = result.map(order => ({
-                _id: order._id,
+                _id: order._id.toString(),
                 date: order.date.toISOString(),
                 status: order.status,
                 totalAmount: order.totalAmount,
                 items: order.items.map(item => ({
-                    product_id: item.product_id,
+                    product_id: item.product_id.toString(),
                     quantity: item.quantity
                 }))
             }));
 
             const mappedExpected = orders.map(order => ({
-                _id: order._id,
+                _id: order._id.toString(),
                 date: order.date.toISOString(),
                 status: order.status,
                 totalAmount: order.totalAmount,
                 items: order.items.map(item => ({
-                    product_id: item.product_id,
+                    product_id: item.product_id.toString(),
                     quantity: item.quantity
                 }))
             }));
@@ -107,13 +112,13 @@ describe('Order Service', function () {
         });
 
         it('should get an order by id successfully', async function () {
-            const orderId = '1';
+            const orderId = new mongoose.Types.ObjectId();
             const order = {
                 _id: orderId,
                 date: new Date(),
                 status: 'pending',
                 totalAmount: 100,
-                items: [{ product_id: '123', quantity: 2 }]
+                items: [{ product_id: new mongoose.Types.ObjectId(), quantity: 2 }]
             };
             
             // Stub sur la méthode findById
@@ -123,21 +128,21 @@ describe('Order Service', function () {
 
             // Comparaison des champs pertinents
             assert.deepEqual({
-                _id: result._id,
+                _id: result._id.toString(),
                 date: result.date.toISOString(),
                 status: result.status,
                 totalAmount: result.totalAmount,
                 items: result.items.map(item => ({
-                    product_id: item.product_id,
+                    product_id: item.product_id.toString(),
                     quantity: item.quantity
                 }))
             }, {
-                _id: order._id,
+                _id: order._id.toString(),
                 date: order.date.toISOString(),
                 status: order.status,
                 totalAmount: order.totalAmount,
                 items: order.items.map(item => ({
-                    product_id: item.product_id,
+                    product_id: item.product_id.toString(),
                     quantity: item.quantity
                 }))
             });
@@ -148,8 +153,12 @@ describe('Order Service', function () {
 
     describe('Update Order', function () {
         it('should update an order successfully', async function () {
-            const orderId = '1';
-            const updateData = { status: 'completed', totalAmount: 120, items: [{ product_id: '123', quantity: 3 }] };
+            const orderId = new mongoose.Types.ObjectId();
+            const updateData = {
+                status: 'completed',
+                totalAmount: 120,
+                items: [{ product_id: new mongoose.Types.ObjectId(), quantity: 3 }]
+            };
             const updatedOrder = { _id: orderId, ...updateData };
             
             // Stub sur la méthode findByIdAndUpdate
@@ -159,19 +168,19 @@ describe('Order Service', function () {
 
             // Comparaison des champs pertinents
             assert.deepEqual({
-                _id: result._id,
+                _id: result._id.toString(),
                 status: result.status,
                 totalAmount: result.totalAmount,
                 items: result.items.map(item => ({
-                    product_id: item.product_id,
+                    product_id: item.product_id.toString(),
                     quantity: item.quantity
                 }))
             }, {
-                _id: updatedOrder._id,
+                _id: updatedOrder._id.toString(),
                 status: updatedOrder.status,
                 totalAmount: updatedOrder.totalAmount,
                 items: updatedOrder.items.map(item => ({
-                    product_id: item.product_id,
+                    product_id: item.product_id.toString(),
                     quantity: item.quantity
                 }))
             });
@@ -180,7 +189,7 @@ describe('Order Service', function () {
         });
 
         it('should throw NotFound error when updating a non-existent order', async function () {
-            const orderId = '999';
+            const orderId = new mongoose.Types.ObjectId();
             
             // Stub sur la méthode findByIdAndUpdate pour retourner null
             const findByIdAndUpdateStub = sandbox.stub(OrderModel, 'findByIdAndUpdate').resolves(null);
@@ -195,13 +204,13 @@ describe('Order Service', function () {
 
     describe('Delete Order', function () {
         it('should delete an order successfully', async function () {
-            const orderId = '1';
+            const orderId = new mongoose.Types.ObjectId();
             const order = {
                 _id: orderId,
                 date: new Date(),
                 status: 'pending',
                 totalAmount: 100,
-                items: [{ product_id: '123', quantity: 2 }]
+                items: [{ product_id: new mongoose.Types.ObjectId(), quantity: 2 }]
             };
             
             // Stub sur la méthode findByIdAndDelete
@@ -214,7 +223,7 @@ describe('Order Service', function () {
         });
 
         it('should throw NotFound error when deleting a non-existent order', async function () {
-            const orderId = '999';
+            const orderId = new mongoose.Types.ObjectId();
             
             // Stub sur la méthode findByIdAndDelete pour retourner null
             const findByIdAndDeleteStub = sandbox.stub(OrderModel, 'findByIdAndDelete').resolves(null);
@@ -226,5 +235,4 @@ describe('Order Service', function () {
             assert(findByIdAndDeleteStub.calledOnce);
         });
     });
-    */
 });
