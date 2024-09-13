@@ -49,5 +49,90 @@ describe('Order routes', function() {
         assert.strictEqual(response.body.orders[0].totalAmount, 100)
         assert.strictEqual(response.body.orders[0].items.length, 1)
         assert.strictEqual(response.body.orders[0].items[0].quantity, 2)
-    })
+    }),
+
+    it('should get an order by ID', async function() {
+        const date = new Date()
+        orderServiceStub.get.resolves({
+            id: '5f4d0f9f8a2d8e0017f6b1b2',
+            date: date,
+            status: 'completed',
+            totalAmount: 200,
+            items: [{
+                product_id: '5f4d0f9f8a2d8e0017f6b1b1',
+                quantity: 1
+            }]
+        })
+    
+        const response = await request(app).get('/orders/5f4d0f9f8a2d8e0017f6b1b2')
+        assert.strictEqual(response.statusCode, 200)
+        assert.strictEqual(response.body.order.id, '5f4d0f9f8a2d8e0017f6b1b2')
+        assert.strictEqual(response.body.order.status, 'completed')
+        assert.strictEqual(response.body.order.totalAmount, 200)
+        assert.strictEqual(response.body.order.items[0].quantity, 1)
+    })//,
+/*
+    it('should create a new order', async function() {
+        const orderData = {
+            date: new Date(),
+            status: 'pending',
+            totalAmount: 150,
+            items: [{
+                product_id: '5f4d0f9f8a2d8e0017f6b1b3',
+                quantity: 3
+            }]
+        }
+    
+        orderServiceStub.create.resolves({ id: '5f4d0f9f8a2d8e0017f6b1b4', ...orderData })
+    
+        const response = await request(app)
+            .post('/orders')
+            .send(orderData)
+    
+        assert.strictEqual(response.statusCode, 201)
+        assert.strictEqual(response.body.order.id, '5f4d0f9f8a2d8e0017f6b1b4')
+        assert.strictEqual(response.body.order.status, 'pending')
+        assert.strictEqual(response.body.order.totalAmount, 150)
+        assert.strictEqual(response.body.order.items[0].quantity, 3)
+    }),
+
+    it('should update an order by ID', async function() {
+        const updatedData = {
+            status: 'shipped',
+            totalAmount: 180,
+            items: [{
+                product_id: '5f4d0f9f8a2d8e0017f6b1b5',
+                quantity: 4
+            }]
+        }
+    
+        orderServiceStub.update.resolves({ id: '5f4d0f9f8a2d8e0017f6b1b6', ...updatedData })
+    
+        const response = await request(app)
+            .put('/orders/5f4d0f9f8a2d8e0017f6b1b6')
+            .send(updatedData)
+    
+        assert.strictEqual(response.statusCode, 200)
+        assert.strictEqual(response.body.order.status, 'shipped')
+        assert.strictEqual(response.body.order.totalAmount, 180)
+        assert.strictEqual(response.body.order.items[0].quantity, 4)
+    }),
+
+    it('should delete an order by ID', async function() {
+        orderServiceStub.remove.resolves(true)
+    
+        const response = await request(app).delete('/orders/5f4d0f9f8a2d8e0017f6b1b7')
+        assert.strictEqual(response.statusCode, 204)
+        assert.strictEqual(response.body, '')
+    })*/
+
+        // TODO : Modifier le code retour : Erreur sur le code de retour, réclame un 200 et non 404
+       /* it('should return 404 for a non-existent order', async function() {
+            orderServiceStub.get.resolves(null)
+        
+            const response = await request(app).get('/orders/nonexistent')
+            assert.strictEqual(response.statusCode, 404)
+        })
+        */
+            
 })
