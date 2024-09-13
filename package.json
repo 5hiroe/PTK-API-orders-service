@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "node -r dotenv/config ./src/app.js",
-    "test": "mocha --require @babel/register ./tests/**/*.mjs"
+    "test": "nyc mocha --recursive 'tests/**/*.mjs'"
   },
   "mocha": {
     "recursive": true,
