@@ -15,6 +15,9 @@ export default class OrderService {
      */
     async getAll () {
         const orders = await OrderModel.find()
+        if (!orders) {
+            throw new NotFound('Aucune commande trouvée.')
+        }
         return orders
     }
 
@@ -25,6 +28,9 @@ export default class OrderService {
      */
     async get ({ orderId }) {
         const order = await OrderModel.findById(orderId)
+        if (!order) {
+            throw new NotFound('Commande introuvable.')
+        }
         return order
     }
 

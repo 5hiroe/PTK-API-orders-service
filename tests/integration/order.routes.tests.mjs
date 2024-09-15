@@ -70,8 +70,8 @@ describe('Order routes', function() {
         assert.strictEqual(response.body.order.status, 'completed')
         assert.strictEqual(response.body.order.totalAmount, 200)
         assert.strictEqual(response.body.order.items[0].quantity, 1)
-    })//,
-/*
+    }),
+
     it('should create a new order', async function() {
         const orderData = {
             date: new Date(),
@@ -94,7 +94,9 @@ describe('Order routes', function() {
         assert.strictEqual(response.body.order.status, 'pending')
         assert.strictEqual(response.body.order.totalAmount, 150)
         assert.strictEqual(response.body.order.items[0].quantity, 3)
-    }),
+    })
+
+    /*
 
     it('should update an order by ID', async function() {
         const updatedData = {
@@ -127,12 +129,12 @@ describe('Order routes', function() {
     })*/
 
         // TODO : Modifier le code retour : Erreur sur le code de retour, réclame un 200 et non 404
-       /* it('should return 404 for a non-existent order', async function() {
-            orderServiceStub.get.resolves(null)
+        // it('should return 404 for a non-existent order', async function() {
+        //     orderServiceStub.get.resolves(null)
         
-            const response = await request(app).get('/orders/nonexistent')
-            assert.strictEqual(response.statusCode, 404)
-        })
-        */
-            
+        //     const response = await request(app).get('/orders/nonexistent')
+
+        //     assert.strictEqual(response.statusCode, 404)
+        // })
+           
 })
