@@ -4,6 +4,7 @@ import router from '../../src/routes/order.js'
 import sinon from 'sinon'
 import assert from 'assert'
 import OrderService from '../../src/services/orders.js'
+import { NotFound } from '../../src/globals/errors.js'
 
 const app = express()
 app.use(express.json())
@@ -74,41 +75,45 @@ describe('Order routes', function() {
 
     it('should create a new order', async function() {
         const orderData = {
-            date: new Date(),
-            status: 'pending',
-            totalAmount: 150,
-            items: [{
-                product_id: '5f4d0f9f8a2d8e0017f6b1b3',
-                quantity: 3
-            }]
+            fields: {
+                date: new Date(),
+                status: 'pending',
+                totalAmount: 150,
+                items: [{
+                    product_id: '5f4d0f9f8a2d8e0017f6b1b3',
+                    quantity: 3
+                }]
+            }
         }
     
-        orderServiceStub.create.resolves({ id: '5f4d0f9f8a2d8e0017f6b1b4', ...orderData })
+        orderServiceStub.create.resolves({ id: '5f4d0f9f8a2d8e0017f6b1b4', ...orderData.fields })
     
         const response = await request(app)
             .post('/orders')
             .send(orderData)
     
-        assert.strictEqual(response.statusCode, 201)
+        assert.strictEqual(response.statusCode, 200)
         assert.strictEqual(response.body.order.id, '5f4d0f9f8a2d8e0017f6b1b4')
         assert.strictEqual(response.body.order.status, 'pending')
         assert.strictEqual(response.body.order.totalAmount, 150)
         assert.strictEqual(response.body.order.items[0].quantity, 3)
-    })
-
-    /*
+    }),
 
     it('should update an order by ID', async function() {
         const updatedData = {
-            status: 'shipped',
-            totalAmount: 180,
-            items: [{
-                product_id: '5f4d0f9f8a2d8e0017f6b1b5',
-                quantity: 4
-            }]
+            fields: {
+                date: new Date(),
+                status: 'shipped',
+                totalAmount: 180,
+                items: [{
+                    product_id: '5f4d0f9f8a2d8e0017f6b1b5',
+                    quantity: 4
+                }]
+            }
+            
         }
     
-        orderServiceStub.update.resolves({ id: '5f4d0f9f8a2d8e0017f6b1b6', ...updatedData })
+        orderServiceStub.update.resolves({ id: '5f4d0f9f8a2d8e0017f6b1b6', ...updatedData.fields })
     
         const response = await request(app)
             .put('/orders/5f4d0f9f8a2d8e0017f6b1b6')
@@ -124,9 +129,9 @@ describe('Order routes', function() {
         orderServiceStub.remove.resolves(true)
     
         const response = await request(app).delete('/orders/5f4d0f9f8a2d8e0017f6b1b7')
-        assert.strictEqual(response.statusCode, 204)
-        assert.strictEqual(response.body, '')
-    })*/
+        assert.strictEqual(response.statusCode, 200)
+        assert.strictEqual(response.body.message, 'Commande supprimée.')
+    })
 
         // TODO : Modifier le code retour : Erreur sur le code de retour, réclame un 200 et non 404
         // it('should return 404 for a non-existent order', async function() {

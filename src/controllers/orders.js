@@ -39,5 +39,5 @@ export async function removeOrder (req, res) {
     OrderValidatorInstance.validate(params, OrderValidatorInstance.removeOrder)
     const { orderId } = req.params
     await OrderServiceInstance.remove({ orderId })
-    return res.status(200).json({ message: 'Order supprimé.' })
+    return res.status(200).json({ message: 'Commande supprimée.' })
 }

@@ -196,7 +196,7 @@ describe('Order Service', function () {
 
             await assert.rejects(
                 orderService.update({ orderId, fields: { status: 'completed' } }),
-                new NotFound('Order introuvable.')
+                new NotFound('Commande introuvable.')
             );
             assert(findByIdAndUpdateStub.calledOnce);
         });
@@ -230,7 +230,7 @@ describe('Order Service', function () {
 
             await assert.rejects(
                 orderService.remove({ orderId }),
-                new NotFound('Order introuvable.')
+                new NotFound('Commande introuvable.')
             );
             assert(findByIdAndDeleteStub.calledOnce);
         });
