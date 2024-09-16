@@ -15,6 +15,9 @@ export default class OrderService {
      */
     async getAll () {
         const orders = await OrderModel.find()
+        if (orders == 0) {
+            throw new NotFound('Aucune commande trouvée.')
+        }
         return orders
     }
 
@@ -24,7 +27,11 @@ export default class OrderService {
      * @param {ObjectId} orderId
      */
     async get ({ orderId }) {
+        console.log('in service')
         const order = await OrderModel.findById(orderId)
+        if (!order) {
+            throw new NotFound('Commande introuvable.')
+        }
         return order
     }
 
@@ -48,7 +55,7 @@ export default class OrderService {
     async update ({ orderId, fields }) {
         const order = await OrderModel.findByIdAndUpdate(orderId, fields, { new: true })
         if (!order) {
-            throw new NotFound('Order introuvable.')
+            throw new NotFound('Commande introuvable.')
         }
         return order
     }
@@ -61,7 +68,7 @@ export default class OrderService {
     async remove ({ orderId }) {
         const order = await OrderModel.findByIdAndDelete(orderId)
         if (!order) {
-            throw new NotFound('Order introuvable.')
+            throw new NotFound('Commande introuvable.')
         }
     }
 }
